@@ -1,0 +1,85 @@
+#!/usr/bin/env python
+
+import glob, re, sys, os
+
+class SeriesManager:
+	
+	def __init__(self, path, new_path):
+	 
+		# var to store the path that is searched
+		self.path_to_search = path
+		
+		# var to store the path that the folders are moved to
+		self.new_path = new_path
+		
+		# array that stores the series that are found, if any
+		self.series_data = self.searchForSeries()
+		
+		# create the folder structures if req.
+		self.createFolders()
+		
+		# #print self.series_data
+	
+	def searchForSeries(self):
+		path_array = glob.glob(path_to_search + "*")
+
+		series_pattern = re.compile(r'(.*?)\.S(\d{1,2})E(\d{1,2})')
+
+		##print path_array
+
+		series_data = {}
+		
+		for path in path_array:
+	
+			if(series_pattern.match(path)):
+			
+				# get the name of the folder/file
+				item = path.split(os.sep);
+				item = item[-1];
+				
+				info = series_pattern.match(path).group(0, 1, 2, 3)
+				series_data[item] = info;
+				
+				#print(item, series_data[item]);
+		
+		return series_data
+		
+	def createFolders(self):
+	
+		# check for existance of series title
+		for item, series in self.series_data.iteritems():
+			
+			# get series name
+			series_name = series[1].replace('.', ' ')
+			series_name = series_name.replace(self.path_to_search, '')
+			series_name += os.sep
+			
+			#print item, series
+			
+			#print('before', series_name, 'after')
+						
+			# Check if the series folder exists. If not, create!
+			if(not os.path.isdir(self.new_path + series_name)):
+				os.makedirs(self.new_path + series_name)
+				
+			# get series season number
+			series_season_number = 'Season ' + str(int(series[2]))
+
+			# Check if the series season folder exists. If not, create!
+			if(not os.path.isdir(self.new_path + series_name + series_season_number)):
+				os.makedirs(self.new_path + series_name + series_season_number) 
+							
+			# Move the original file to it's new directory!
+			os.rename(self.path_to_search + item, self.new_path + series_name + series_season_number + os.sep + item)
+			
+			##print(series)
+			
+# Set the path to search
+path_to_search = '/mnt/usb_1/complete/'
+
+# Set the new path
+new_path = '/mnt/usb_1/complete/tvseries/';
+
+seasonManager = SeriesManager(path_to_search, new_path)
+sys.exit();
+
