@@ -23,7 +23,7 @@ class SeriesManager:
 	def searchForSeries(self):
 		path_array = glob.glob(path_to_search + "*")
 
-		series_pattern = re.compile(r'(.*?)\.S(\d{1,2})E(\d{1,2})')
+		series_pattern = re.compile('(.*?)\.([s]+|[S]+)(\d{1,2})([e]+|[E]+)(\d{1,2})')
 
 		##print path_array
 
